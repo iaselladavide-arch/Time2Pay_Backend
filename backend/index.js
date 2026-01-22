@@ -2,81 +2,69 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import path from "path";
-import { fileURLToPath } from 'url';
+import fs from "fs";
+import { fileURLToPath } from "url";
 
-import googleRouter from './routes/google.js';
+import googleRouter from "./routes/google.js";
 import loginRoute from "./routes/login.js";
 import registerRoute from "./routes/register.js";
 import groupsRoute from "./routes/groups.js";
 import usersRoute from "./routes/users.js";
 import expensesRoute from "./routes/expenses.js";
 
-
 dotenv.config();
 
 const app = express();
 
-// Configurazione per ottenere __dirname in ES modules
+// __dirname per ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(cors({
-  origin: ['https://time2pay-backend.onrender.com', 'exp://*'],
-  credentials: true
-}));
+// ✅ CORS corretto per Expo + Render
+app.use(cors());
 app.use(express.json());
 
-// Servi file statici dalla cartella uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Static uploads (TEMPORANEO su Render)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Routes
 app.use("/api/expenses", expensesRoute);
-app.use('/auth/google', googleRouter);
+app.use("/auth/google", googleRouter);
 app.use("/login", loginRoute);
 app.use("/register", registerRoute);
 app.use("/api/groups", groupsRoute);
 app.use("/api/users", usersRoute);
 
-// Route di test
+// Health check
 app.get("/", (req, res) => {
   res.json({ message: "Backend is running!" });
 });
 
-// Crea la cartella uploads se non esiste
-import fs from 'fs';
-const uploadsDir = path.join(__dirname, 'uploads');
-const groupsUploadsDir = path.join(__dirname, 'uploads', 'groups');
-
+// Crea cartelle uploads (solo runtime)
+const uploadsDir = path.join(__dirname, "uploads/groups");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
-  console.log('Cartella uploads creata');
 }
 
-if (!fs.existsSync(groupsUploadsDir)) {
-  fs.mkdirSync(groupsUploadsDir, { recursive: true });
-  console.log('Cartella uploads/groups creata');
-}
-
-// Gestione errori 404
+// 404
 app.use((req, res) => {
-  res.status(404).json({ 
+  res.status(404).json({
     error: "Route not found",
     path: req.path,
-    method: req.method 
+    method: req.method
   });
 });
 
-// Gestione errori generici
+// Error handler
 app.use((err, req, res, next) => {
-  console.error("Server error:", err);
-  res.status(500).json({ 
-    error: "Internal server error",
-    message: err.message 
+  console.error(err);
+  res.status(500).json({
+    error: "Internal server error"
   });
 });
 
+// Start
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Backend running on http://localhost:${PORT}`);
-  console.log(`Uploads disponibili su http://localhost:${PORT}/uploads/`);
-  console.log(`Also accessible on network IPs`);
+app.listen(PORT, () => {
+  console.log(`Backend running on port ${PORT}`);
 });
