@@ -1,0 +1,28 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "jsx": "react-native",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",  // Cambiato da "nodenext"
+    "module": "esnext",             // Cambiato da "nodenext"
+    "target": "esnext",
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": false,  // AGGIUNGI QUESTO - deve essere FALSE
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "noEmit": true,
+    "paths": {
+      "@/*": ["./*"]  // Assicurati che sia così
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "app/**/*.tsx"  // Assicurati che la cartella app sia inclusa
+  ]
+}
