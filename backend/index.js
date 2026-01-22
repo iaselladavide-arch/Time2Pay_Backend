@@ -21,7 +21,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(cors({
-  origin: ['http://localhost:8081', 'http://10.178.160.160:3000', 'exp://*'],
+  origin: ['http://localhost:8081', 'https://time2pay-backend.onrender.com', 'exp://*'],
   credentials: true
 }));
 app.use(express.json());
